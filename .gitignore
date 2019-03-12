@@ -1,3 +1,8 @@
 .expo/
 node_modules/
 npm-debug.log*
+
+# Vim files
+*.swa
+*.swp
+*.swo
