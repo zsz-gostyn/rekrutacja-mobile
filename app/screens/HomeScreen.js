@@ -5,7 +5,7 @@ import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Cont
 import getTheme from 'app/native-base-theme/components';
 import material from 'app/native-base-theme/variables/material';
 
-import { HeaderStatusBarFixStyle } from 'app/styles/HeaderStatusBarFixStyle';
+import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixStyle';
 
 export default class HomeScreen extends Component {
   render() {
