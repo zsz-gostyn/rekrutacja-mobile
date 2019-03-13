@@ -7,7 +7,7 @@ import material from 'app/native-base-theme/variables/material';
 
 import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixStyle';
 
-export default class HomeScreen extends Component {
+export default class SubscriberRegisterScreen extends Component {
   render() {
     return (
       <StyleProvider style={getTheme(material)}>
@@ -23,7 +23,7 @@ export default class HomeScreen extends Component {
             </Body>
           </Header>
           <Content>
-            <Text>Strona główna</Text>
+            <Text>Zarejestruj się</Text>
           </Content>
         </Container>
       </StyleProvider>

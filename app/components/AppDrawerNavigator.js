@@ -7,7 +7,9 @@ import getTheme from 'app/native-base-theme/components';
 import material from 'app/native-base-theme/variables/material';
 
 import HomeScreen from 'app/screens/HomeScreen';
-import SettingsScreen from 'app/screens/SettingsScreen';
+import NewsScreen from 'app/screens/NewsScreen';
+import SubscriberRegisterScreen from 'app/screens/SubscriberRegisterScreen';
+import AppInfoScreen from 'app/screens/AppInfoScreen';
 
 
 const CustomDrawerComponent = (props) => (
@@ -52,15 +54,27 @@ export const AppDrawerNavigator = createDrawerNavigator({
   home: {
     screen: HomeScreen,
     navigationOptions: {
-      title: 'Strona domowa',
+      title: 'Strona główna',
     },
   },
   settings: {
-    screen: SettingsScreen,
+    screen: NewsScreen,
     navigationOptions: {
-      title: 'Panel ustawień',
+      title: 'Aktualności',
     },
   },
+  register: {
+    screen: SubscriberRegisterScreen,
+    navigationOptions: {
+      title: 'Zarejestruj się',
+    },
+  },
+  appInfo: {
+    screen: AppInfoScreen,
+    navigationOptions: {
+      title: 'Informacje o aplikacji',
+    },
+  }
 }, {
   contentComponent: CustomDrawerComponent,
 });
