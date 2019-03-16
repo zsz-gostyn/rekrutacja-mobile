@@ -6,9 +6,9 @@ import { createDrawerNavigator, DrawerItems } from 'react-navigation';
 import getTheme from 'app/native-base-theme/components';
 import material from 'app/native-base-theme/variables/material';
 
-import HomeScreen from 'app/screens/HomeScreen';
 import NewsScreen from 'app/screens/NewsScreen';
 import SubscriberRegisterScreen from 'app/screens/SubscriberRegisterScreen';
+import HelpScreen from 'app/screens/HelpScreen';
 import AppInfoScreen from 'app/screens/AppInfoScreen';
 
 
@@ -51,13 +51,7 @@ const styles = StyleSheet.create({
 });
 
 export const AppDrawerNavigator = createDrawerNavigator({
-  home: {
-    screen: HomeScreen,
-    navigationOptions: {
-      title: 'Strona główna',
-    },
-  },
-  settings: {
+  news: {
     screen: NewsScreen,
     navigationOptions: {
       title: 'Aktualności',
@@ -68,6 +62,12 @@ export const AppDrawerNavigator = createDrawerNavigator({
     navigationOptions: {
       title: 'Zarejestruj się',
     },
+  },
+  help: {
+    screen: HelpScreen,
+    navigationOptions: {
+      title: 'Pomoc',
+    }
   },
   appInfo: {
     screen: AppInfoScreen,

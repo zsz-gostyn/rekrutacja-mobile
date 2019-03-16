@@ -19,7 +19,7 @@ export default class SubscriberRegisterScreen extends Component {
               </Button>
             </Left>
             <Body>
-              <Title>ZSZ-Rekrutacja</Title>
+              <Title>Zarejestruj się</Title>
             </Body>
           </Header>
           <Content>

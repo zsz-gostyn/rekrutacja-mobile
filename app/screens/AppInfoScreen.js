@@ -19,7 +19,7 @@ export default class AppInfoScreen extends Component {
               </Button>
             </Left>
             <Body>
-              <Title>ZSZ-Rekrutacja</Title>
+              <Title>Informacje o aplikacji</Title>
             </Body>
           </Header>
           <Content>
