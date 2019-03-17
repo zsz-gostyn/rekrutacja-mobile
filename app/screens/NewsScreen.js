@@ -8,7 +8,7 @@ import material from 'app/native-base-theme/variables/material';
 import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixStyle';
 
 import PostsDownloader from 'app/api/PostsDownloader';
-import CustomScrollComponent from 'app/components/CustomScrollComponent';
+import PostComponent from 'app/components/PostComponent';
 
 export default class NewsScreen extends Component {
   constructor(props) {
@@ -57,7 +57,7 @@ export default class NewsScreen extends Component {
           <Container>
               <FlatList
                 data={this.state.posts}
-                renderItem={({item}) => <ListItem style={{paddingTop: 100, paddingBottom: 100}}><Text>{item.topic}</Text></ListItem>}
+                renderItem={({item}) => <PostComponent data={item}/>}
                 keyExtractor={(item, index) => item.id.toString()}
                 onEndReached={(distance) => this.loadMorePosts()}
                 onEndReachedThreshold={0.5}
