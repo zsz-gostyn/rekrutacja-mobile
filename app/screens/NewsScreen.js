@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, FlatList } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Content, Text, ListItem } from 'native-base';
 
 import getTheme from 'app/native-base-theme/components';
@@ -9,35 +9,50 @@ import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixSt
 
 import PostsDownloader from 'app/api/PostsDownloader';
 import PostComponent from 'app/components/PostComponent';
+import ReadPostsStorage from 'app/storage/ReadPostsStorage';
 
 export default class NewsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
+      loading: false,
     };
+  }
+  
+  async componentDidMount() {
+    this.readPostsStorage = new ReadPostsStorage();
+    await this.readPostsStorage.fetchData();
 
-    this.postsDownloader = new PostsDownloader();
-    this.loadMorePosts();
+    this.refresh();
   }
-  
-  loadMorePosts() {
-    this.postsDownloader.loadMore()
-      .then(() => {
-        if (true || !this.postsDownloader.isLoading()) {
-          this.setState({
-            posts: this.postsDownloader.getAllLoaded(),
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+
+  async loadMorePosts() {
+    if (this.state.loading) {
+      return null;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    await this.postsDownloader.loadMore();
+
+    this.setState({
+      posts: this.postsDownloader.getAllLoaded(),
+      loading: false,
+    });
   }
-  
+
   refresh() {
+    this.posts = [];
     this.postsDownloader = new PostsDownloader();
     this.loadMorePosts();
+  }
+
+  async togglePostReadState(post) {
+    this.readPostsStorage.togglePostRead(post);
+    await this.readPostsStorage.flushData();
   }
 
   render() {
@@ -57,13 +72,14 @@ export default class NewsScreen extends Component {
           <Container>
               <FlatList
                 data={this.state.posts}
-                renderItem={({item}) => <PostComponent data={item}/>}
+                renderItem={({item}) => <PostComponent data={item} onReadStateChange={() => this.togglePostReadState(item)} isRead={this.readPostsStorage.isPostRead(item)} />}
                 keyExtractor={(item, index) => item.id.toString()}
                 onEndReached={(distance) => this.loadMorePosts()}
                 onEndReachedThreshold={0.5}
                 onRefresh={() => this.refresh()}
                 refreshing={false}
               />
+              { this.state.loading && <ActivityIndicator />}
           </Container>
         </Container>
       </StyleProvider>
