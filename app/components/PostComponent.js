@@ -80,9 +80,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderColor: '#f0f0f0',
-    padding: 10,
-    marginLeft: 5,
-    marginRight: 5,
+    paddingVertical: 10,
   },
   left: {
     flex: 1,

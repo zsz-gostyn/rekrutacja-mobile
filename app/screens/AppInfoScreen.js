@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Content, Text } from 'native-base';
 
 import getTheme from 'app/native-base-theme/components';
@@ -22,11 +22,25 @@ export default class AppInfoScreen extends Component {
               <Title>Informacje o aplikacji</Title>
             </Body>
           </Header>
-          <Content>
-            <Text>Informacje o aplikacji</Text>
+          <Content style={styles.container}>
+            <View style={styles.item}>
+              <Text style={styles.content}>Informacje o aplikacji</Text>
+            </View>
           </Content>
         </Container>
       </StyleProvider>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+  },
+  content: {
+    fontSize: 16
+  },
+  item: {
+    marginBottom: 20,
+  },
+});

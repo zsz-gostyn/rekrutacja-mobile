@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 export default class ReadStateBadge extends Component {
   render() {
     return (
-      <Icon name="book" style={this.props.read ? styles.read : styles.unread} />
+      <Icon name={this.props.read ? "mail-open" : "mail-unread"} style={this.props.read ? styles.read : styles.unread} />
     );
   }
 }
@@ -21,7 +21,7 @@ ReadStateBadge.defaultProps = {
 
 const styles = StyleSheet.create({
   read: {
-    color: 'green',
+    color: '#303030',
   },
   unread: {
     color: 'red',
