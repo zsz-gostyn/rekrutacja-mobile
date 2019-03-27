@@ -1,3 +1,5 @@
+import { API_URL } from 'app/config/AppConfig';
+
 export default class PostsDownloader {
   constructor() {
     this.posts = [];
@@ -20,7 +22,7 @@ export default class PostsDownloader {
     };
 
     try {
-      let response = await fetch(`http://192.168.100.15/posts?limit=${amount}&offset=${this.offset}`, config);
+      let response = await fetch(`${API_URL}/posts?limit=${amount}&offset=${this.offset}`, config);
       response = await response.json();
 
       this.posts = this.posts.concat(response.data);

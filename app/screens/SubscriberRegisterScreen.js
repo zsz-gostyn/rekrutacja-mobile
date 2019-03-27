@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Content, Text } from 'native-base';
+import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Content } from 'native-base';
 
 import getTheme from 'app/native-base-theme/components';
 import material from 'app/native-base-theme/variables/material';
 
 import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixStyle';
+
+import SubscriberRegisterFormComponent from 'app/components/SubscriberRegisterFormComponent';
 
 export default class SubscriberRegisterScreen extends Component {
   render() {
@@ -23,7 +25,7 @@ export default class SubscriberRegisterScreen extends Component {
             </Body>
           </Header>
           <Content>
-            <Text>Zarejestruj się</Text>
+            <SubscriberRegisterFormComponent />
           </Content>
         </Container>
       </StyleProvider>
