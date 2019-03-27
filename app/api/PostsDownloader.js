@@ -21,16 +21,12 @@ export default class PostsDownloader {
       headers
     };
 
-    try {
-      let response = await fetch(`${API_URL}/posts?limit=${amount}&offset=${this.offset}`, config);
-      response = await response.json();
+    let response = await fetch(`${API_URL}/posts?limit=${amount}&offset=${this.offset}`, config);
+    response = await response.json();
 
-      this.posts = this.posts.concat(response.data);
-      this.offset += response.data.length;
-      this.total = response.count;
-    } catch (error) {
-      console.error('Błąd w loadMore()', error);
-    }
+    this.posts = this.posts.concat(response.data);
+    this.offset += response.data.length;
+    this.total = response.count;
   }
 
   getAllLoaded() {

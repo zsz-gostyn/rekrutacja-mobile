@@ -6,8 +6,8 @@ import getTheme from 'app/native-base-theme/components';
 import material from 'app/native-base-theme/variables/material';
 
 import { HeaderStatusBarFixStyle } from 'app/screens/styles/HeaderStatusBarFixStyle';
-
 import SubscriberRegisterFormComponent from 'app/components/SubscriberRegisterFormComponent';
+import ErrorComponent, { ErrorType } from 'app/components/errors/ErrorComponent';
 
 export default class SubscriberRegisterScreen extends Component {
   render() {

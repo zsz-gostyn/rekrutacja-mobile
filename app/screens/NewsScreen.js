@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { StyleProvider, Container, Header, Left, Button, Icon, Body, Title, Content, Text, ListItem } from 'native-base';
 
 import getTheme from 'app/native-base-theme/components';
@@ -11,18 +11,27 @@ import PostsDownloader from 'app/api/PostsDownloader';
 import PostComponent from 'app/components/PostComponent';
 import ReadPostsStorage from 'app/storage/ReadPostsStorage';
 
+import ErrorComponent, { ErrorType } from 'app/components/errors/ErrorComponent';
+
 export default class NewsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
       loading: false,
+      error: ErrorType.NONE,
     };
   }
   
   async componentDidMount() {
-    this.readPostsStorage = new ReadPostsStorage();
-    await this.readPostsStorage.fetchData();
+    try {
+      this.readPostsStorage = new ReadPostsStorage();
+      await this.readPostsStorage.fetchData();
+    } catch (error) {
+      this.setState({
+        error: ErrorType.STORAGE,
+      });
+    }
 
     this.refresh();
   }
@@ -35,8 +44,14 @@ export default class NewsScreen extends Component {
     this.setState({
       loading: true,
     });
-
-    await this.postsDownloader.loadMore();
+    
+    try {
+      await this.postsDownloader.loadMore();
+    } catch (error) {
+      this.setState({
+        error: ErrorType.NETWORKING,
+      });
+    }
 
     this.setState({
       posts: this.postsDownloader.getAllLoaded(),
@@ -52,7 +67,14 @@ export default class NewsScreen extends Component {
 
   async togglePostReadState(post) {
     this.readPostsStorage.togglePostRead(post);
-    await this.readPostsStorage.flushData();
+
+    try {
+      await this.readPostsStorage.flushData();
+    } catch (error) {
+      this.setState({
+        error: ErrorType.NETWORKING,
+      });
+    }
   }
 
   render() {
@@ -70,16 +92,27 @@ export default class NewsScreen extends Component {
             </Body>
           </Header>
           <Container>
-              <FlatList
-                data={this.state.posts}
-                renderItem={({item}) => <PostComponent data={item} onReadStateChange={() => this.togglePostReadState(item)} isRead={this.readPostsStorage.isPostRead(item)} />}
-                keyExtractor={(item, index) => item.id.toString()}
-                onEndReached={(distance) => this.loadMorePosts()}
-                onEndReachedThreshold={0.5}
-                onRefresh={() => this.refresh()}
-                refreshing={false}
-              />
-              { this.state.loading && <ActivityIndicator />}
+            {(() => {
+              if (this.state.error != ErrorType.NONE) {
+                return (<ErrorComponent type={this.state.error} />);
+              }
+              
+              return (
+                <View>
+                  <FlatList
+                    data={this.state.posts}
+                    renderItem={({item}) => <PostComponent data={item} onReadStateChange={() => this.togglePostReadState(item)} isRead={this.readPostsStorage.isPostRead(item)} />}
+                    keyExtractor={(item, index) => item.id.toString()}
+                    onEndReached={(distance) => this.loadMorePosts()}
+                    onEndReachedThreshold={0.5}
+                    onRefresh={() => this.refresh()}
+                    refreshing={false}
+                  />
+                  { this.state.loading && <ActivityIndicator />}
+                </View>
+              );
+
+            })()}
           </Container>
         </Container>
       </StyleProvider>

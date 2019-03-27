@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Picker, KeyboardAvoidingView, ScrollView } from
 import { Input, Button } from 'native-base';
 
 import { API_URL } from 'app/config/AppConfig';
+import ErrorComponent, { ErrorType } from 'app/components/errors/ErrorComponent';
 
 export default class SubscriberRegisterFormComponent extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ export default class SubscriberRegisterFormComponent extends Component {
       displayFormMessage: false,
       formState: null, // If null - not displaying the message; if true - message is green; if false - message is red
       formMessage: '',
+      error: ErrorType.NONE,
     };
   }
   
@@ -36,24 +38,60 @@ export default class SubscriberRegisterFormComponent extends Component {
       });
 
     } catch (error) {
-      console.error(error);
+      this.setState({
+        error: ErrorType.NETWORKING,
+      });
     }
   }
 
   async subscriberRegisterAction() {
-    let formValid = this.validateForm();
+    try {
+      let formValid = this.validateForm();
 
-    if (formValid) {
-      // Prepare school for adding subscriber
-      let schoolId;
-      
-      if (this.state.selectedSchoolValue === 'other') {
-        let response = await fetch(API_URL + '/schools', {
-          method: 'POST',
-          body: JSON.stringify({ name: this.state.customSchoolNameValue }),
-        });
+      if (formValid) {
+        // Prepare school for adding subscriber
+        let schoolId;
         
-        if (response.ok !== true || response.status != 201) {
+        if (this.state.selectedSchoolValue === 'other') {
+          let response = await fetch(API_URL + '/schools', {
+            method: 'POST',
+            body: JSON.stringify({ name: this.state.customSchoolNameValue }),
+          });
+          
+          if (response.ok !== true || response.status != 201) {
+            this.setState({
+              formMessage: 'Problem komunikacji z serwerem',
+              formState: false,
+            });
+
+            return;
+          }
+
+          schoolId = (await response.json()).data.id;
+        } else {
+          const school = this.state.schools.find((element) => {
+            if (element.name === this.state.selectedSchoolValue) {
+              return element;
+            }
+          });
+
+          schoolId = school.id;
+        }
+
+        // Add new subscriber
+        const subscriber = {
+          "first_name": this.state.firstNameValue,
+          "surname": this.state.surnameValue,
+          "email": this.state.emailValue,
+          "school": schoolId,
+        };
+
+        const response = await fetch(API_URL + '/subscribers', {
+          method: 'POST',
+          body: JSON.stringify(subscriber)
+        });
+
+        if (response.ok !== true && response.state !== 201) {
           this.setState({
             formMessage: 'Problem komunikacji z serwerem',
             formState: false,
@@ -62,48 +100,20 @@ export default class SubscriberRegisterFormComponent extends Component {
           return;
         }
 
-        schoolId = (await response.json()).data.id;
-      } else {
-        const school = this.state.schools.find((element) => {
-          if (element.name === this.state.selectedSchoolValue) {
-            return element;
-          }
+        this.setState({
+          formMessage: 'Pomyślnie dodano nowego subskrybenta!',
+          formState: true,
         });
 
-        schoolId = school.id;
-      }
-
-      // Add new subscriber
-      const subscriber = {
-        "first_name": this.state.firstNameValue,
-        "surname": this.state.surnameValue,
-        "email": this.state.emailValue,
-        "school": schoolId,
-      };
-
-      const response = await fetch(API_URL + '/subscribers', {
-        method: 'POST',
-        body: JSON.stringify(subscriber)
-      });
-
-      if (response.ok !== true && response.state !== 201) {
+      } else {
         this.setState({
-          formMessage: 'Problem komunikacji z serwerem',
+          formMessage: 'Błąd walidacji formularza',
           formState: false,
         });
-
-        return;
       }
-
+    } catch (error) {
       this.setState({
-        formMessage: 'Pomyślnie dodano nowego subskrybenta!',
-        formState: true,
-      });
-
-    } else {
-      this.setState({
-        formMessage: 'Błąd walidacji formularza',
-        formState: false,
+        error: ErrorType.NETWORKING,
       });
     }
   }
@@ -167,6 +177,10 @@ export default class SubscriberRegisterFormComponent extends Component {
   }
 
   render() {
+    if (this.state.error !== ErrorType.NONE) {
+      return <ErrorComponent type={this.state.error} />
+    }
+
     let schools = this.state.schools.map(item => (
       <Picker.Item label={item.name} value={item.name} key={item.id} /> 
     ));
@@ -226,6 +240,7 @@ export default class SubscriberRegisterFormComponent extends Component {
             <Picker.Item label="Mojej szkoły nie ma na liście" value="other" />
           </Picker>
         </View>
+        { this.state.selectedSchoolValidation === false && <Text style={styles.errorMessage}>Należy wybrać szkołę</Text> }
 
         {
           this.state.selectedSchoolValue === 'other' &&
@@ -293,6 +308,7 @@ const styles = StyleSheet.create({
   errorMessage: {
     textAlign: 'center',
     color: '#d85452',
+    marginBottom: 10,
   },
   successMessage: {
     textAlign: 'center',
