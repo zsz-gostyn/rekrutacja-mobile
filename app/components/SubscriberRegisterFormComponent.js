@@ -4,6 +4,7 @@ import { Input, Button } from 'native-base';
 
 import { API_URL } from 'app/config/AppConfig';
 import ErrorComponent, { ErrorType } from 'app/components/errors/ErrorComponent';
+import HyperlinkComponent from 'app/components/HyperlinkComponent';
 
 export default class SubscriberRegisterFormComponent extends Component {
   constructor(props) {
@@ -256,6 +257,13 @@ export default class SubscriberRegisterFormComponent extends Component {
 
           </View>
         }
+        
+        <View style={styles.privacyInfo}>
+          <Text>
+            Wypełnienie formularza oznacza, że podane w nim dane osobowe będą przetwarzane w celu przesłania informacji o rekrutacji oraz kontaktu w jej sprawie.
+          </Text>
+          <HyperlinkComponent content="Dowiedz się kto i jak przetwarza twoje dane" onPress={() => this.props.navigation.navigate('privacyPolicy')} />
+        </View>
 
         <View style={styles.buttonsView}>
           <Button style={styles.button} onPress={() => this.subscriberRegisterAction()}>
@@ -317,5 +325,8 @@ const styles = StyleSheet.create({
   formMessage: {
     fontSize: 16,
     padding: 10,
+  },
+  privacyInfo: {
+    margin: 10
   }
 });

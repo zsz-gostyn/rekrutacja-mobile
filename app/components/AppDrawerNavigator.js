@@ -10,7 +10,7 @@ import NewsScreen from 'app/screens/NewsScreen';
 import SubscriberRegisterScreen from 'app/screens/SubscriberRegisterScreen';
 import HelpScreen from 'app/screens/HelpScreen';
 import AppInfoScreen from 'app/screens/AppInfoScreen';
-
+import PrivacyPolicyScreen from 'app/screens/PrivacyPolicyScreen';
 
 const CustomDrawerComponent = (props) => (
   <StyleProvider style={getTheme(material)}>
@@ -68,6 +68,12 @@ export const AppDrawerNavigator = createDrawerNavigator({
     navigationOptions: {
       title: 'Pomoc',
     }
+  },
+  privacyPolicy: {
+    screen: PrivacyPolicyScreen,
+    navigationOptions: {
+      title: 'Polityka prywatności',
+    },
   },
   appInfo: {
     screen: AppInfoScreen,

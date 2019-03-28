@@ -25,7 +25,7 @@ export default class SubscriberRegisterScreen extends Component {
             </Body>
           </Header>
           <Content>
-            <SubscriberRegisterFormComponent />
+            <SubscriberRegisterFormComponent navigation={this.props.navigation} />
           </Content>
         </Container>
       </StyleProvider>
