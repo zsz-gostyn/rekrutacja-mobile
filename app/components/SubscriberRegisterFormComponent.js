@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Picker, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Picker, Alert } from 'react-native';
 import { Input, Button } from 'native-base';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { API_URL } from 'app/config/AppConfig';
 import ErrorComponent, { ErrorType } from 'app/components/errors/ErrorComponent';
@@ -12,6 +13,9 @@ export default class SubscriberRegisterFormComponent extends Component {
 
     this.state = {
       schools: [],
+      error: ErrorType.NONE, 
+
+      // Form data
       firstNameValue: '',
       firstNameValidation: null,
       surnameValue: '',
@@ -22,10 +26,6 @@ export default class SubscriberRegisterFormComponent extends Component {
       selectedSchoolValidation: null,
       customSchoolNameValue: '',
       customSchoolNameValidation: null,
-      displayFormMessage: false,
-      formState: null, // If null - not displaying the message; if true - message is green; if false - message is red
-      formMessage: '',
-      error: ErrorType.NONE,
     };
   }
   
@@ -44,26 +44,52 @@ export default class SubscriberRegisterFormComponent extends Component {
       });
     }
   }
+  
+  formReset() {
+    this.setState({
+      firstNameValue: '',
+      firstNameValidation: null,
+      surnameValue: '',
+      surnameValidation: null,
+      emailValue: '',
+      emailValidation: null,
+      selectedSchoolValue: '',
+      selectedSchoolValidation: null,
+      customSchoolNameValue: '',
+      customSchoolNameValidation: null,
+    });
+  }
 
   async subscriberRegisterAction() {
     try {
       let formValid = this.validateForm();
 
       if (formValid) {
+        // Clone data that will be cleared by form reset
+        const formData = {
+          firstName: this.state.firstNameValue,
+          surname: this.state.surnameValue,
+          email: this.state.emailValue,
+          selectedSchool: this.state.selectedSchoolValue,
+          customSchoolName: this.state.customSchoolNameValue
+        };
+
+        this.formReset();
+
         // Prepare school for adding subscriber
         let schoolId;
         
-        if (this.state.selectedSchoolValue === 'other') {
+        if (formData.selectedSchool === 'other') {
           let response = await fetch(API_URL + '/schools', {
             method: 'POST',
-            body: JSON.stringify({ name: this.state.customSchoolNameValue }),
+            body: JSON.stringify({ name: formData.selectedSchool }),
           });
           
           if (response.ok !== true || response.status != 201) {
-            this.setState({
-              formMessage: 'Problem komunikacji z serwerem',
-              formState: false,
-            });
+            Alert.alert(
+              'Problem komunikacji z serwerem',
+              'Wystąpił problem komunikacji z serwerem. Skontaktuj się z administratorem.'
+            );
 
             return;
           }
@@ -71,7 +97,7 @@ export default class SubscriberRegisterFormComponent extends Component {
           schoolId = (await response.json()).data.id;
         } else {
           const school = this.state.schools.find((element) => {
-            if (element.name === this.state.selectedSchoolValue) {
+            if (element.name === formData.selectedSchool) {
               return element;
             }
           });
@@ -81,36 +107,36 @@ export default class SubscriberRegisterFormComponent extends Component {
 
         // Add new subscriber
         const subscriber = {
-          "first_name": this.state.firstNameValue,
-          "surname": this.state.surnameValue,
-          "email": this.state.emailValue,
-          "school": schoolId,
+          'first_name': formData.firstName,
+          'surname': formData.surname,
+          'email': formData.email,
+          'school': schoolId,
         };
-
+        console.log(subscriber);
         const response = await fetch(API_URL + '/subscribers', {
           method: 'POST',
           body: JSON.stringify(subscriber)
         });
 
         if (response.ok !== true && response.state !== 201) {
-          this.setState({
-            formMessage: 'Problem komunikacji z serwerem',
-            formState: false,
-          });
+          Alert.alert(
+            'Problem komunikacji z serwerem',
+            'Wystąpił problem komunikacji z serwerem. Skontaktuj się z administratorem.'
+          );
 
           return;
         }
 
-        this.setState({
-          formMessage: 'Pomyślnie dodano nowego subskrybenta!',
-          formState: true,
-        });
+        Alert.alert(
+          'Pomyślnie zarejestrowano',
+          'Pomyślnie zarejestrowano! Sprawdź swoją skrzynkę e-mail.'
+        );
 
       } else {
-        this.setState({
-          formMessage: 'Błąd walidacji formularza',
-          formState: false,
-        });
+        Alert.alert(
+          'Niepoprawne dane w formularzu',
+          'Sprawdź, czy poprawnie uzupełniłeś poszczególne pola. Zastosuj się do wskazówek, które znajdują się pod danymi polami.',
+        );
       }
     } catch (error) {
       this.setState({
@@ -187,16 +213,7 @@ export default class SubscriberRegisterFormComponent extends Component {
     ));
 
     return (
-      <KeyboardAvoidingView behavior="padding" enabled keyboardVerticalOffset={200}>
-        {
-          this.state.formState !== null &&
-          <View>
-            <Text style={[styles.formMessage, this.state.formState ? styles.successMessage : styles.errorMessage]}>
-              {this.state.formMessage}
-            </Text>
-          </View>
-        }
-        
+      <KeyboardAwareScrollView>
         <View>
           <Input
             placeholder="Imię"
@@ -263,6 +280,9 @@ export default class SubscriberRegisterFormComponent extends Component {
             Wypełnienie formularza oznacza, że podane w nim dane osobowe będą przetwarzane w celu przesłania informacji o rekrutacji oraz kontaktu w jej sprawie.
           </Text>
           <HyperlinkComponent content="Dowiedz się kto i jak przetwarza twoje dane" onPress={() => this.props.navigation.navigate('privacyPolicy')} />
+          <Text style={{ fontWeight: 'bold' }}>
+            Pamiętaj, aby po utworzeniu konta potwierdzić rejestrację. Odpowiedni link otrzymasz na swój adres e-mail. W przeciwnym wypadku Twoje konto zostanie usunięte.
+          </Text>
         </View>
 
         <View style={styles.buttonsView}>
@@ -272,7 +292,7 @@ export default class SubscriberRegisterFormComponent extends Component {
             </Text>
           </Button>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     );
   }
 }
