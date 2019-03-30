@@ -14,10 +14,10 @@ export default class NetworkingErrorComponent extends Component {
           <Text style={styles.title}>Błąd sieci</Text>
         </View>
         <View style={styles.item}>
-          <Text style={styles.content}>Wystąpił błąd sieci. Upewnij się, czy na pewno masz prawidłowo działające połączenie sieciowe.</Text>
+          <Text style={styles.content}>Wystąpił błąd sieci. Upewnij się, czy na pewno masz dostęp do Internetu.</Text>
         </View>
         <View style={styles.item}>
-          <Text style={styles.content}>Jeżeli tak, spróbuj ponowić próbę za jakiś czas. Jeżeli nie przyniesie to zamierzonego skutku, skontaktuj się z administratorem</Text>
+          <Text style={styles.content}>Jeżeli tak, spróbuj wyłączyć aplikację i włączyć ją jeszcze raz. Jeżeli nie przyniesie to zamierzonego skutku, skontaktuj się z administratorem</Text>
         </View>
       </View>
     );

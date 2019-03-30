@@ -24,6 +24,10 @@ export default class NewsScreen extends Component {
   }
   
   async componentDidMount() {
+    this.setState({ posts: [] });
+    this.postsDownloader = new PostsDownloader();
+    this.loadMorePosts();
+
     try {
       this.readPostsStorage = new ReadPostsStorage();
       await this.readPostsStorage.fetchData();
@@ -33,36 +37,25 @@ export default class NewsScreen extends Component {
       });
     }
 
-    this.refresh();
   }
 
-  async loadMorePosts() {
+  loadMorePosts() {
     if (this.state.loading) {
       return null;
     }
 
-    this.setState({
-      loading: true,
-    });
-    
-    try {
-      await this.postsDownloader.loadMore();
-    } catch (error) {
+    this.setState({ loading: true }, async () => {
+      try {
+        await this.postsDownloader.loadMore(10 );
+      } catch (error) {
+        this.setState({ error: ErrorType.NETWORKING });
+      }
+
       this.setState({
-        error: ErrorType.NETWORKING,
+        posts: this.postsDownloader.getAllLoaded(),
+        loading: false,
       });
-    }
-
-    this.setState({
-      posts: this.postsDownloader.getAllLoaded(),
-      loading: false,
     });
-  }
-
-  refresh() {
-    this.posts = [];
-    this.postsDownloader = new PostsDownloader();
-    this.loadMorePosts();
   }
 
   async togglePostReadState(post) {
@@ -91,29 +84,27 @@ export default class NewsScreen extends Component {
               <Title>Aktualności</Title>
             </Body>
           </Header>
-          <Container>
+          <View>
             {(() => {
               if (this.state.error != ErrorType.NONE) {
                 return (<ErrorComponent type={this.state.error} />);
               }
               
               return (
-                <View>
-                  <FlatList
-                    data={this.state.posts}
-                    renderItem={({item}) => <PostComponent data={item} onReadStateChange={() => this.togglePostReadState(item)} isRead={this.readPostsStorage.isPostRead(item)} />}
-                    keyExtractor={(item, index) => item.id.toString()}
-                    onEndReached={(distance) => this.loadMorePosts()}
-                    onEndReachedThreshold={0.5}
-                    onRefresh={() => this.refresh()}
-                    refreshing={false}
-                  />
-                  { this.state.loading && <ActivityIndicator />}
-                </View>
+                <FlatList
+                  data={this.state.posts}
+                  renderItem={({item}) => <PostComponent data={item} onReadStateChange={() => this.togglePostReadState(item)} isRead={this.readPostsStorage.isPostRead(item)} />}
+                  keyExtractor={(item, index) => item.id.toString()}
+                  onEndReached={(distance) => this.loadMorePosts()}
+                  onEndReachedThreshold={0.5}
+                  onRefresh={() => this.componentDidMount()}
+                  refreshing={false}
+                  listFooterComponent={this.state.loading && <ActivityIndicator />}
+                />
               );
 
             })()}
-          </Container>
+          </View>
         </Container>
       </StyleProvider>
     );

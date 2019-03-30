@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "ZSZ-Rekrutacja",
+    "description": "Aplikacja informująca o przebiegu rekrutacji w Zespole Szkół Zawodowych im. Powstańców Wielkopolskich w Gostyniu",
     "slug": "rekrutacja-mobile",
     "privacy": "public",
     "sdkVersion": "32.0.0",
@@ -8,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -26,7 +27,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.zszgostyn.rekrutacja"
+      "package": "com.zszgostyn.rekrutacja",
+      "permissions": [],
+      "versionCode": 2
     }
   }
 }

@@ -15,14 +15,14 @@ import PrivacyPolicyScreen from 'app/screens/PrivacyPolicyScreen';
 const CustomDrawerComponent = (props) => (
   <StyleProvider style={getTheme(material)}>
     <ScrollView>
-      <Container>
+      <View>
         <View style={styles.menuHeader}>
           <Text style={styles.bigTitle}>ZSZ-Rekrutacja</Text>
           <Image source={require('assets/logo.png')} style={styles.logo} />
           <Text style={styles.smallTitle}>Menu główne</Text>
         </View>
         <DrawerItems {...props} />
-      </Container>
+      </View>
     </ScrollView>
   </StyleProvider>
 );
@@ -80,7 +80,7 @@ export const AppDrawerNavigator = createDrawerNavigator({
     navigationOptions: {
       title: 'Informacje o aplikacji',
     },
-  }
+  },
 }, {
   contentComponent: CustomDrawerComponent,
 });

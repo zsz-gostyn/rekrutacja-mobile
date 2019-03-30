@@ -14,7 +14,7 @@ export default class StorageErrorComponent extends Component {
           <Text style={styles.title}>Błąd pamięci</Text>
         </View>
         <View style={styles.item}>
-          <Text style={styles.content}>Wystąpił błąd pamięci programu. Skontaktuj się z autorem aplikacji.</Text>
+          <Text style={styles.content}>Wystąpił błąd pamięci programu. Skontaktuj się z administratorem.</Text>
         </View>
       </View>
     );
